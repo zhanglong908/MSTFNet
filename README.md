@@ -1,5 +1,5 @@
 # MSTFNet
-![image](https://raw.githubusercontent.com/zhanglong908/yong/main/framework.png)
+![image](https://raw.githubusercontent.com/zhanglong908/MSTFNet/main/framework.png)
 
 This repo holds codes of the paper: MSTFNet: Multi-Scale Spatio-Temporal Fusion Network with Hierarchical Feature Alignment for Continuous Sign Language Recognition
 
@@ -104,7 +104,7 @@ For CSL-Daily dataset, You may choose to reduce the lr by half from 0.0001 to 0.
 
 ### Visualizations
 For Grad-CAM visualization, you can replace the resnet.py under "./modules" with the resnet.py under "./weight_map_generation", and then run ```python generate_cam.py``` with your own hyperparameters.
-![image](https://raw.githubusercontent.com/zhanglong908/yong/main/heatmap.png)
+![image](https://raw.githubusercontent.com/zhanglong908/MSTFNet/main/heatmap.png)
 ### Test with one video input
 Except performing inference on datasets, we provide a `test_one_video.py` to perform inference with only one video input. An example command is 
 
