@@ -19,7 +19,7 @@ This repo is based on [CorrNet](https://github.com/hulianyuyy/CorrNet_CSLR). Man
    You may use the python version evaluation tool for convenience (by setting 'evaluate_tool' as 'python' in line 16 of ./configs/baseline.yaml), but sclite can provide more detailed statistics.
 
 - You can install other required modules by conducting 
-   `pip install -r requirements.txt`
+   `conda env create -f environment.yml -n new_env`
 
 ## Implementation
 We found that on the PHOENIX2014 dataset, the best performance is achieved when the HFAM module shares a common HA across all layers, whereas on PHOENIX2014-T and CSL-Daily, assigning layer-specific HAs yields the optimal results.
