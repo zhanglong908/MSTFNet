@@ -22,14 +22,15 @@ This repo is based on [CorrNet](https://github.com/hulianyuyy/CorrNet_CSLR). Man
    `pip install -r requirements.txt`
 
 ## Implementation
-The implementation for the CorrNet (line 18) is given in [./modules/resnet.py](https://github.com/hulianyuyy/CorrNet_CSLR/blob/main/modules/resnet.py).  
-
-It's then equipped with the BasicBlock in ResNet in line 58 [./modules/resnet.py](https://github.com/hulianyuyy/CorrNet_CSLR/blob/main/modules/resnet.py).
-
-We later found that the Identification Module with only spatial decomposition could perform on par with what we report in the paper (spatial-temporal decomposition) and is slighter faster, and thus implement it as such.
+We found that on the PHOENIX2014 dataset, the best performance is achieved when the HFAM module shares a common HA across all layers, whereas on PHOENIX2014-T and CSL-Daily, assigning layer-specific HAs yields the optimal results.
+We attribute this discrepancy to the fact that PHOENIX2014 contains shorter, more repetitive sentence patterns whose temporal dynamics can be 
+adequately captured by a single, shared attention head; in contrast, the longer and linguistically richer utterances in PHOENIX2014-T and CSL-Daily 
+benefit from layer-wise specialized attention heads that progressively refine distinct aspects of spatio-temporal dependencies.
 
 ## Data Preparation
-You can choose any one of following datasets to verify the effectiveness of CorrNet.
+We carefully selected three authoritative and widely-adopted public datasets that together cover the main application scenarios, vocabulary scales and linguistic complexities of continuous sign language recognition.
+Together these datasets span weather news, daily dialogue and multi-modal scenarios, providing complementary challenges such as large vocabulary, long-range temporal dependencies, signer variation and visual diversity; consequently they constitute a rigorous test-bed for verifying the effectiveness and generalization ability of MSTFNet.
+You can choose any one of the following datasets to reproduce the reported results or further verify the effectiveness of MSTFNet.
 
 ### PHOENIX2014 dataset
 1. Download the RWTH-PHOENIX-Weather 2014 Dataset [[download link]](https://www-i6.informatik.rwth-aachen.de/~koller/RWTH-PHOENIX/). Our experiments based on phoenix-2014.v3.tar.gz.
@@ -59,19 +60,7 @@ You can choose any one of following datasets to verify the effectiveness of Corr
 
 If you get an error like ```IndexError: list index out of range``` on the PHOENIX2014-T dataset, you may refer to [this issue](https://github.com/hulianyuyy/CorrNet/issues/10#issuecomment-1660363025) to tackle the problem.
 
-### CSL dataset
 
-1. Request the CSL Dataset from this website [[download link]](https://ustc-slr.github.io/openresources/cslr-dataset-2015/index.html)
-
-2. After finishing dataset download, extract it. It is suggested to make a soft link toward downloaded dataset.   
-   `ln -s PATH_TO_DATASET ./dataset/CSL`
-
-3. The original image sequence is 1280x720, we resize it to 256x256 for augmentation. Run the following command to generate gloss dict and resize image sequence.     
-
-   ```bash
-   cd ./preprocess
-   python dataset_preprocess-CSL.py --process-image --multiprocessing
-   ``` 
 
 ### CSL-Daily dataset
 
@@ -87,9 +76,32 @@ If you get an error like ```IndexError: list index out of range``` on the PHOENI
    python dataset_preprocess-CSL-Daily.py --process-image --multiprocessing
    ``` 
 
+## Inference
+
+### PHOENIX2014 dataset
+
+| Backbone | Dev WER | Test WER | Pretrained model                                             |
+|----------|---------|----------| --- |
+| ResNet34 | 17.1%   | 17.6%    | [[Baidu]]( https://pan.baidu.com/s/1ZmobWAegBtuoFJNFqO85Yg) (passwd: 9kfw)<br /> |
 
 
-​	To evaluate the pretrained model, choose the dataset from phoenix2014/phoenix2014-T/CSL/CSL-Daily in line 3 in ./config/baseline.yaml first, and run the command below：   
+
+### PHOENIX2014-T dataset
+
+| Backbone | Dev WER | Test WER | Pretrained model                                             |
+|----------|---------|----------| --- |
+| ResNet34 | 16.8%   | 17.9%    | [[Baidu]](https://pan.baidu.com/s/1YKSoMxXKShEcGQEUGgiC3Q) (passwd: i5y3)<br />|
+
+### CSL-Daily dataset
+
+| Backbone | Dev WER | Test WER | Pretrained model                                            |
+|----------|---------|----------| --- |
+| ResNet34 | 24.8%   | 24.0%    | [[Baidu]]( https://pan.baidu.com/s/1VODfeKYzzdcyi8dzwRpTJw) (passwd: hpcn)<br />|
+
+We wrongly delete the original checkpoint and retrain the model with similar accuracy (Dev: 24.8%, Test: 24.0%)
+​	
+
+To evaluate the pretrained model, choose the dataset from phoenix2014/phoenix2014-T/CSL/CSL-Daily in line 3 in ./config/baseline.yaml first, and run the command below：   
 `python main.py --config ./config/baseline.yaml --device your_device --load-weights path_to_weight.pt --phase test`
 
 ### Training
@@ -99,11 +111,10 @@ The priorities of configuration files are: command line > config file > default 
 `python main.py --config ./config/baseline.yaml --device your_device`
 
 Note that you can choose the target dataset from phoenix2014/phoenix2014-T/CSL/CSL-Daily in line 3 in ./config/baseline.yaml.
- 
-For CSL-Daily dataset, You may choose to reduce the lr by half from 0.0001 to 0.00005, change the lr deacying rate (gamma in the 'optimizer.py') from 0.2 to 0.5, and disable the temporal resampling strategy (comment line 121 in dataloader_video.py).
+
 
 ### Visualizations
-For Grad-CAM visualization, you can replace the resnet.py under "./modules" with the resnet.py under "./weight_map_generation", and then run ```python generate_cam.py``` with your own hyperparameters.
+For Grad-CAM visualization, you can  run ```python generate_cam.py``` with your own hyperparameters.
 ![image](https://raw.githubusercontent.com/zhanglong908/MSTFNet/main/heatmap.png)
 ### Test with one video input
 Except performing inference on datasets, we provide a `test_one_video.py` to perform inference with only one video input. An example command is 
@@ -116,6 +127,5 @@ Acceptable paramters:
 - `model_path`, the path to pretrained weights.
 - `video_path`, the path to a video file or a dir contains extracted images from a video.
 - `device`, which device to run inference, default=0.
-- `language`, the target sign language, default='phoenix', choices=['phoenix', 'csl'].
+- `language`, the target sign language, default='phoenix', choices=['phoenix', 'csl-daily'].
 - `max_frames_num`, the max input frames sampled from an input video, default=360.
-
