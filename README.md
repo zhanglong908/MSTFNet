@@ -1,5 +1,5 @@
 # MSTFNet
-![image](https://raw.githubusercontent.com/zhanglong908/MSTFNet/main/framework.png)
+![image](https://raw.githubusercontent.com/zhanglong908/MSTFNet/main/framework.png?t=20250917)
 
 This repo holds codes of the paper: MSTFNet: Multi-Scale Spatio-Temporal Fusion Network with Hierarchical Feature Alignment for Continuous Sign Language Recognition
 
