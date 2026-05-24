@@ -3,7 +3,7 @@
 
 This repo holds codes of the paper: MSTFNet: Multi-Scale Spatio-Temporal Fusion Network with Hierarchical Feature Alignment for Continuous Sign Language Recognition
 
-This repo is based on [CorrNet](https://github.com/hulianyuyy/CorrNet_CSLR). Many thanks for their great work!
+This repo is based on [HSTENet](https://github.com/justlis/HSTENet). Many thanks for their great work!
 
 
 ## Prerequisites
@@ -20,12 +20,6 @@ This repo is based on [CorrNet](https://github.com/hulianyuyy/CorrNet_CSLR). Man
 
 - You can install other required modules by conducting 
    `conda env create -f environment.yml -n new_env`
-
-## Implementation
-We found that on the PHOENIX2014 dataset, the best performance is achieved when the HFAM module shares a common HA across all layers, whereas on PHOENIX2014-T and CSL-Daily, assigning layer-specific HAs yields the optimal results.
-We attribute this discrepancy to the fact that PHOENIX2014 contains shorter, more repetitive sentence patterns whose temporal dynamics can be 
-adequately captured by a single, shared attention head; in contrast, the longer and linguistically richer utterances in PHOENIX2014-T and CSL-Daily 
-benefit from layer-wise specialized attention heads that progressively refine distinct aspects of spatio-temporal dependencies.
 
 ## Data Preparation
 We carefully selected three authoritative and widely-adopted public datasets that together cover the main application scenarios, vocabulary scales and linguistic complexities of continuous sign language recognition.
@@ -82,7 +76,7 @@ If you get an error like ```IndexError: list index out of range``` on the PHOENI
 
 | Backbone | Dev WER | Test WER | Pretrained model                                             |
 |----------|---------|----------| --- |
-| ResNet34 | 17.1%   | 17.6%    | [[Baidu]]( https://pan.baidu.com/s/1ZmobWAegBtuoFJNFqO85Yg) (passwd: 9kfw)<br /> |
+| ResNet34 | 17.0%   | 17.3%    | [[Baidu]](https://pan.baidu.com/s/1XT6HqiKS4b3rDTJPvOwUXQ) (passwd: et5p)<br /> |
 
 
 
@@ -90,16 +84,15 @@ If you get an error like ```IndexError: list index out of range``` on the PHOENI
 
 | Backbone | Dev WER | Test WER | Pretrained model                                             |
 |----------|---------|----------| --- |
-| ResNet34 | 16.8%   | 17.9%    | [[Baidu]](https://pan.baidu.com/s/1YKSoMxXKShEcGQEUGgiC3Q) (passwd: i5y3)<br />|
+| ResNet34 | 16.1%   | 17.6%    | [[Baidu]](https://pan.baidu.com/s/1-vagrKCDpmGXso6qQdwyOg) (passwd: i76v)<br />|
 
 ### CSL-Daily dataset
 
 | Backbone | Dev WER | Test WER | Pretrained model                                            |
 |----------|---------|----------| --- |
-| ResNet34 | 24.8%   | 24.0%    | [[Baidu]]( https://pan.baidu.com/s/1VODfeKYzzdcyi8dzwRpTJw) (passwd: hpcn)<br />|
+| ResNet34 | 24.6%   | 23.8%    | [[Baidu]]( https://pan.baidu.com/s/12QACz74re8L25_mffl30OQ) (passwd: 8nfu)<br />|
 
-We wrongly delete the original checkpoint and retrain the model with similar accuracy (Dev: 24.8%, Test: 24.0%)
-​	
+
 
 To evaluate the pretrained model, choose the dataset from phoenix2014/phoenix2014-T/CSL/CSL-Daily in line 3 in ./config/baseline.yaml first, and run the command below：   
 `python main.py --config ./config/baseline.yaml --device your_device --load-weights path_to_weight.pt --phase test`
@@ -113,9 +106,11 @@ The priorities of configuration files are: command line > config file > default 
 Note that you can choose the target dataset from phoenix2014/phoenix2014-T/CSL/CSL-Daily in line 3 in ./config/baseline.yaml.
 
 
-### Visualizations
-For Grad-CAM visualization, you can  run ```python generate_cam.py``` with your own hyperparameters.
-![image](https://raw.githubusercontent.com/zhanglong908/MSTFNet/main/heatmap.png)
+[//]: # (### Visualizations)
+
+[//]: # (For Grad-CAM visualization, you can  run ```python generate_cam.py``` with your own hyperparameters.)
+
+[//]: # (![image]&#40;https://raw.githubusercontent.com/zhanglong908/MSTFNet/main/heatmap.png&#41;)
 ### Test with one video input
 Except performing inference on datasets, we provide a `test_one_video.py` to perform inference with only one video input. An example command is 
 
