@@ -19,13 +19,13 @@ model_urls = {
 
 
 
-class SpatioTemporalFusion(nn.Module):
+class MultiScaleSpatioTemporalFusion(nn.Module):
     def __init__(self, in_channels, n_segment=8):
         super().__init__()
         self.in_channels = in_channels
         self.n_segment = n_segment
 
-        # 多尺度时间卷积 (3D)
+
         self.t_convs = nn.ModuleList([
             nn.Sequential(
                 nn.Conv3d(in_channels, in_channels, (3, 1, 1),
@@ -41,7 +41,7 @@ class SpatioTemporalFusion(nn.Module):
             )
         ])
 
-        # 多尺度空间卷积 (2D)
+
         self.s_convs = nn.ModuleList([
             nn.Sequential(
                 nn.Conv3d(in_channels, in_channels, (1, 3, 3),
@@ -57,7 +57,7 @@ class SpatioTemporalFusion(nn.Module):
             )
         ])
 
-        # 动态特征校准
+
         self.calibration = nn.Sequential(
             nn.AdaptiveAvgPool3d(1),
             nn.Conv3d(in_channels, in_channels // 8, 1),
@@ -66,7 +66,7 @@ class SpatioTemporalFusion(nn.Module):
             nn.Softmax(dim=1)
         )
 
-        # 时空交互门
+
         self.st_gate = nn.Sequential(
             nn.Conv3d(in_channels * 2, in_channels // 2, 1),
             nn.ReLU(inplace=True),
@@ -77,21 +77,21 @@ class SpatioTemporalFusion(nn.Module):
     def forward(self, x):
         nt, c, t, h, w = x.size()
 
-        # 时间特征分支
+
         t_feats = [t_conv(x) for t_conv in self.t_convs]
 
-        # 空间特征分支
+
         s_feats = [s_conv(x) for s_conv in self.s_convs]
 
-        # 特征融合
+
         all_feats = t_feats + s_feats
         all_feats = torch.stack(all_feats, dim=1)  # [B, 4, C, T, H, W]
 
-        # 动态权重校准
+
         weights = self.calibration(x)  # [B, 4, 1, 1, 1]
         fused = (all_feats * weights.unsqueeze(2)).sum(dim=1)
 
-        # 时空交互门控
+
         gate = self.st_gate(torch.cat([x, fused], dim=1))
         output = x + gate * fused
 
@@ -154,12 +154,12 @@ class ResNet(nn.Module):
         self.maxpool = nn.MaxPool3d(kernel_size=(1,3,3), stride=(1,2,2), padding=(0,1,1))
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
-        self.shift1 = SpatioTemporalFusion(128)
+        self.mstf1 = MultiScaleSpatioTemporalFusion(128)
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
-        self.shift2 = SpatioTemporalFusion(256)
+        self.mstf2 = MultiScaleSpatioTemporalFusion(256)
         self.alpha = nn.Parameter(torch.zeros(3), requires_grad=True)
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
-        self.shift3 = SpatioTemporalFusion(512)
+        self.mstf3 = MultiScaleSpatioTemporalFusion(512)
         self.avgpool = nn.AvgPool2d(7, stride=1)
         self.dropout = nn.Dropout(0.3)
         self.fc = nn.Linear(512 * block.expansion, num_classes)
@@ -202,24 +202,22 @@ class ResNet(nn.Module):
         res.append(x)
         x = self.layer2(x)
         res.append(x)
-        x = x + self.shift1(x) * self.alpha[0]
+        x = x + self.mstf1(x) * self.alpha[0]
 
         x = self.layer3(x)
         res.append(x)
-        x = x + self.shift2(x) * self.alpha[1]
+        x = x + self.mstf2(x) * self.alpha[1]
 
         x = self.layer4(x)
         res.append(x)
-        x = x + self.shift3(x) * self.alpha[2]
+        x = x + self.mstf3(x) * self.alpha[2]
 
         x = x.transpose(1,2).contiguous()
         x = x.view((-1,)+x.size()[2:]) #bt,c,h,w
 
         x = self.avgpool(x)
         x = x.view(x.size(0), -1) #bt,c
-        # x = self.dropout(x)
         x = self.fc(x) #bt,c
-
         return x,res
 
 
@@ -248,11 +246,5 @@ def resnet34(**kwargs):
             checkpoint[ln] = checkpoint[ln].unsqueeze(2)
     model.load_state_dict(checkpoint, strict=False)
     return model
-class Identity(nn.Module):
-    def __init__(self):
-        super(Identity, self).__init__()
-
-    def forward(self, x):
-        return x
 
 
