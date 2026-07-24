@@ -1,6 +1,4 @@
-import pdb
 import torch
-import collections
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -61,25 +59,15 @@ class TemporalConv(nn.Module):
             self.kernel_size = ['K3']
         elif self.conv_type == 1:
             self.kernel_size = ['K5', "P2"]
-            self.strides = [0]
         elif self.conv_type == 2:
             self.kernel_size = ['K5', "P2", 'K5', "P2"]
-            self.strides = [4,0]
-
 
         self.temporal_conv = nn.ModuleList([])
-        #nums = 0
+
         for layer_idx, ks in enumerate(self.kernel_size):
             input_sz = self.input_size if layer_idx == 0 else self.hidden_size
             if ks[0] == 'P':
-                #nums += 1
-                #if nums == 2:
-                #    self.temporal_conv.append(nn.MaxPool1d(kernel_size=int(ks[1]), ceil_mode=False))
-                #elif nums == 1:
-                self.temporal_conv.append(Temporal_LiftPool(input_size=input_sz, kernel_size=int(ks[1])))
-                #self.temporal_conv.append(nn.MaxPool1d(kernel_size=int(ks[1]), ceil_mode=False))
-                #self.temporal_conv.append(nn.AvgPool1d(kernel_size=int(ks[1]), ceil_mode=False))
-                
+                self.temporal_conv.append(Temporal_LiftPool(input_size=input_sz, kernel_size=int(ks[1])))  
             elif ks[0] == 'K':
                 self.temporal_conv.append(
                     nn.Sequential(
@@ -107,7 +95,7 @@ class TemporalConv(nn.Module):
         i = 0
         for tempconv in self.temporal_conv:
             if isinstance(tempconv, Temporal_LiftPool):
-                visual_feat, loss_u, loss_d = tempconv(visual_feat) #self.strides[i])
+                visual_feat, loss_u, loss_d = tempconv(visual_feat)
                 i +=1
                 loss_LiftPool_u += loss_u
                 loss_LiftPool_p += loss_d
