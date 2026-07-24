@@ -78,7 +78,7 @@ If you get an error like ```IndexError: list index out of range``` on the PHOENI
 |----------|---------|----------| --- |
 | ResNet34 | 17.0%   | 17.3%    | [[Baidu]](https://pan.baidu.com/s/1XT6HqiKS4b3rDTJPvOwUXQ) (passwd: et5p)<br /> |
 
-
+Furthermore, through further code optimization, we have successfully improved the model performance (ResNet34 backbone) to 16.8% (Dev WER)​ and 16.9% (Test WER). The code is now open-sourced, and we welcome everyone to download and train it for reproduction.
 
 ### PHOENIX2014-T dataset
 
