@@ -1,5 +1,6 @@
 # MSTFNet
-![image](https://raw.githubusercontent.com/zhanglong908/MSTFNet/main/framework.png?t=20250917)
+
+[//]: # (![image]&#40;https://raw.githubusercontent.com/zhanglong908/MSTFNet/main/framework.png?t=20250917&#41;)
 
 This repo holds codes of the paper: "Hierarchically Guided Spatio-Temporal Fusion for Continuous Sign Language Recognition"
 
