@@ -76,7 +76,7 @@ If you get an error like ```IndexError: list index out of range``` on the PHOENI
 
 | Backbone | Dev WER | Test WER | Pretrained model                                             |
 |----------|---------|----------| --- |
-| ResNet34 | 17.0%   | 17.3%    | [[Baidu]](https://pan.baidu.com/s/1XT6HqiKS4b3rDTJPvOwUXQ) (passwd: et5p)<br /> |
+| ResNet34 | 17.0%   | 17.1%    | [[Baidu]](https://pan.baidu.com/s/1XT6HqiKS4b3rDTJPvOwUXQ) (passwd: et5p)<br /> |
 
 Furthermore, through further code optimization, we have successfully improved the model performance (ResNet34 backbone) to 16.8% (Dev WER)​ and 16.9% (Test WER). The code is now open-sourced, and we welcome everyone to download and train it for reproduction.
 
@@ -84,18 +84,18 @@ Furthermore, through further code optimization, we have successfully improved th
 
 | Backbone | Dev WER | Test WER | Pretrained model                                             |
 |----------|---------|----------| --- |
-| ResNet34 | 16.1%   | 17.6%    | [[Baidu]](https://pan.baidu.com/s/1-vagrKCDpmGXso6qQdwyOg) (passwd: i76v)<br />|
+| ResNet34 | 16.0%   | 17.0%    | [[Baidu]](https://pan.baidu.com/s/1-vagrKCDpmGXso6qQdwyOg) (passwd: i76v)<br />|
 
 ### CSL-Daily dataset
 
 | Backbone | Dev WER | Test WER | Pretrained model                                            |
 |----------|---------|----------| --- |
-| ResNet34 | 24.6%   | 23.8%    | [[Baidu]]( https://pan.baidu.com/s/12QACz74re8L25_mffl30OQ) (passwd: 8nfu)<br />|
+| ResNet34 | 24.0%   | 22.8%    | [[Baidu]]( https://pan.baidu.com/s/12QACz74re8L25_mffl30OQ) (passwd: 8nfu)<br />|
 
 
-We will announce further improved results after completing additional training. The code is already publicly available.
+The code is already publicly available.
 To evaluate the pretrained model, choose the dataset from phoenix2014/phoenix2014-T/CSL/CSL-Daily in line 3 in ./config/baseline.yaml first, and run the command below：   
-`python main.py --config ./config/baseline.yaml --device your_device --load-weights path_to_weight.pt --phase test`
+`python main.py --config ./config/baseline.yaml --device your_device --load-weights best_model.pt --phase test`
 
 ### Training
 
