@@ -30,34 +30,7 @@ class NormLinear(nn.Module):
         outputs = torch.matmul(x, F.normalize(self.weight, dim=0))
         return outputs
 
-class SpatioTemporalSE(nn.Module):
-    """时空SE模块，适用于视频数据"""
 
-    def __init__(self, channel, reduction=16):
-        super(SpatioTemporalSE, self).__init__()
-        self.avg_pool = nn.AdaptiveAvgPool3d(1)
-        self.max_pool = nn.AdaptiveMaxPool3d(1)
-
-        # 时间注意力分支
-        self.temporal_att = nn.Sequential(
-            nn.Conv3d(channel, channel // 4, kernel_size=(3, 1, 1),
-                      padding=(1, 0, 0), groups=channel // 16),
-            nn.BatchNorm3d(channel // 4),
-            nn.ReLU(inplace=True),
-            nn.Conv3d(channel // 4, channel, kernel_size=(3, 1, 1),
-                      padding=(1, 0, 0), groups=channel // 16),
-            nn.Sigmoid()
-        )
-
-    def forward(self, x):
-        b, c, t, h, w = x.size()
-
-
-
-        temporal_att = self.temporal_att(x)
-
-
-        return x * temporal_att.expand_as(x)
 
 
 
