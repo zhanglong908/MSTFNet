@@ -60,30 +60,6 @@ class SpatioTemporalSE(nn.Module):
         return x * temporal_att.expand_as(x)
 
 
-class CSA(nn.Module):
-    def __init__(self, inplanes, planes=1024):
-        super(CSA, self).__init__()
-
-        self.stf1 = SpatioTemporalSE(512)
-        self.stf2 = SpatioTemporalSE(512)
-        self.stf3 = SpatioTemporalSE(512)
-        self.con1 = nn.Sequential(nn.AvgPool3d(kernel_size=(1,4,4),stride=(1,4,4)),nn.Conv3d(64,512,kernel_size=(1,2,2),stride=(1,2,2)))
-
-        self.con2 = nn.Conv3d(128,512,kernel_size=(1,4,4),stride=(1,4,4))
-        self.con3 = nn.Conv3d(256,512,kernel_size=(1,2,2),stride=(1,2,2))
-        self.tcn_layers = nn.Sequential(
-            nn.Conv1d(inplanes, planes, kernel_size=5, stride=1, padding=0),
-            nn.BatchNorm1d(planes),
-            nn.ReLU(inplace=True),
-            # nn.Dropout(0.3),  # 添加dropout防止过拟合
-            nn.MaxPool1d(kernel_size=2, ceil_mode=False),
-            nn.Conv1d(planes, planes, kernel_size=5, stride=1, padding=0),
-            nn.BatchNorm1d(planes),
-            nn.ReLU(inplace=True),
-            nn.MaxPool1d(kernel_size=2, ceil_mode=False),
-        )
-        self.avgpool = nn.AvgPool2d(7, stride=1)
-        self.fc = nn.Linear(512 , 1000)
 
 
 
@@ -166,10 +142,7 @@ class SLRModel(nn.Module):
             framewise = framewise.view(batch, temp, -1).permute(0, 2, 1)
         else:
             framewise = x
-        res2 = self.csa(res)
-        for i in range(3):
-            res2[i] = res2[i].permute(2, 0, 1)
-            res2[i] = self.classifier(res2[i])
+        
         conv1d_outputs = self.conv1d(framewise, len_x)
         # x: T, B, C
         x = conv1d_outputs['visual_feat']
@@ -212,15 +185,7 @@ class SLRModel(nn.Module):
                                                       label.cpu().int(), ret_dict["feat_len"].cpu().int(),
                                                       label_lgt.cpu().int()).mean()
                 loss += total_loss['SeqCTC']
-                loss += 0.6*self.loss['CTCLoss'](ret_dict["res2"][0].log_softmax(-1),
-                                             label.cpu().int(), ret_dict["feat_len"].cpu().int(),
-                                             label_lgt.cpu().int()).mean()
-                loss += 0.6*self.loss['CTCLoss'](ret_dict["res2"][1].log_softmax(-1),
-                                             label.cpu().int(), ret_dict["feat_len"].cpu().int(),
-                                             label_lgt.cpu().int()).mean()
-                loss += 0.6*self.loss['CTCLoss'](ret_dict["res2"][2].log_softmax(-1),
-                                             label.cpu().int(), ret_dict["feat_len"].cpu().int(),
-                                             label_lgt.cpu().int()).mean()
+                
             elif k == 'Dist':
                 total_loss['Dist'] = weight * self.loss['distillation'](ret_dict["conv_logits"],
                                                            ret_dict["sequence_logits"].detach(),
