@@ -85,13 +85,13 @@ Furthermore, through further code optimization, we have successfully improved th
 
 | Backbone | Dev WER | Test WER | Pretrained model                                             |
 |----------|---------|----------| --- |
-| ResNet34 | 16.0%   | 17.0%    | [[Baidu]](https://pan.baidu.com/s/1-vagrKCDpmGXso6qQdwyOg) (passwd: i76v)<br />|
+| ResNet34 | 16.0%   | 17.0%    | [[Baidu]](https://pan.baidu.com/s/19KUcm68HJqjmx5loeUOVeA) (passwd: ew4n)<br />|
 
 ### CSL-Daily dataset
 
 | Backbone | Dev WER | Test WER | Pretrained model                                            |
 |----------|---------|----------| --- |
-| ResNet34 | 24.0%   | 22.8%    | [[Baidu]]( https://pan.baidu.com/s/12QACz74re8L25_mffl30OQ) (passwd: 8nfu)<br />|
+| ResNet34 | 24.0%   | 22.8%    | [[Baidu]](https://pan.baidu.com/s/1wHoBe2UFFsxXRlrc1DrTjw) (passwd: u9vu)<br />|
 
 
 The code is already publicly available.
